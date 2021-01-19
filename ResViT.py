@@ -12,6 +12,9 @@ import torch.nn.functional as F
 from einops import rearrange
 from torch import nn
 import torch.nn.init as init
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 def _weights_init(m):
     classname = m.__class__.__name__
     #print(classname)
@@ -262,6 +265,7 @@ def train(model, optimizer, data_loader, loss_history):
     model.train()
 
     for i, (data, target) in enumerate(data_loader):
+        data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = F.log_softmax(model(data), dim=1)
         loss = F.nll_loss(output, target)
@@ -283,6 +287,7 @@ def evaluate(model, data_loader, loss_history):
 
     with torch.no_grad():
         for data, target in data_loader:
+            data, target = data.to(device), target.to(device)
             output = F.log_softmax(model(data), dim=1)
             loss = F.nll_loss(output, target, reduction='sum')
             _, pred = torch.max(output, dim=1)
@@ -300,7 +305,7 @@ def evaluate(model, data_loader, loss_history):
 N_EPOCHS = 150
 
 
-model = ViTResNet(BasicBlock, [3, 3, 3])
+model = ViTResNet(BasicBlock, [3, 3, 3]).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
 
 #optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate,momentum=.9,weight_decay=1e-4)
