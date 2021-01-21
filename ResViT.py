@@ -156,7 +156,7 @@ class Transformer(nn.Module):
      
 
 class ViTResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10, dim = 128, num_tokens = 8, mlp_dim = 256, heads = 8, depth = 6, emb_dropout = 0.1, dropout= 0.1):
+    def __init__(self, block, num_blocks, num_classes=10, dim = 128, num_tokens = 8, mlp_dim = 256, heads = 8, depth = 6, emb_dropout = 0.1, dropout= 0.1, batch_size=(100,100)):
         super(ViTResNet, self).__init__()
         self.in_planes = 16
         self.L = num_tokens
@@ -171,9 +171,9 @@ class ViTResNet(nn.Module):
         
         
         # Tokenization
-        self.token_wA = nn.Parameter(torch.empty(BATCH_SIZE_TRAIN,self.L, 64),requires_grad = True) #Tokenization parameters
+        self.token_wA = nn.Parameter(torch.empty(batch_size[0],self.L, 64),requires_grad = True) #Tokenization parameters
         torch.nn.init.xavier_uniform_(self.token_wA)
-        self.token_wV = nn.Parameter(torch.empty(BATCH_SIZE_TRAIN,64,self.cT),requires_grad = True) #Tokenization parameters
+        self.token_wV = nn.Parameter(torch.empty(batch_size[1],64,self.cT),requires_grad = True) #Tokenization parameters
         torch.nn.init.xavier_uniform_(self.token_wV)        
              
         
